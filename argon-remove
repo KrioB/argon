@@ -1,12 +1,33 @@
 #!/bin/bash
 
+echo "Removeing Argon One Case Controls"
+
+echo -n "Are you shure to remove? [Y/n]:"
+read -n 1 confirm
+echo
+if [ "$confirm" == "y" ] || [ "$confirm" == "Y" ]
+then
+    echo "Removeing..."
+else
+    exit 0
+fi
+
+
+echo "Stop argon daemon"
+
 sudo systemctl stop argond.service
 sudo systemctl disable argond.service
 
+echo "Stop argon fan"
+
 python3 /usr/lib/systemd/system-shutdown/argon-poweroff.py "halt"
+
+echo "Remove argon components"
 
 sudo rm /usr/bin/argond.py
 sudo rm /usr/lib/systemd/system/argond.service
 sudo rm /etc/argond.conf
 sudo rm /usr/lib/systemd/system-shutdown/argon-poweroff.py
 sudo rm /usr/bin/argon-remove
+
+echo "Removed"
