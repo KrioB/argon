@@ -68,6 +68,7 @@ def loadConfiguration():
 
             configuration["curve"].append([k, v])
 
+    confFile.close()
 
     if len(configuration["curve"]) > 1:
         configuration["curve"].sort(key=lambda x: x[0] * 1000 + x[1], reverse=False)
