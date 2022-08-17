@@ -130,7 +130,6 @@ TemperatureFile = "/sys/class/thermal/thermal_zone0/temp"
 ConfigurationFile = "argond.conf"
 
 conf = loadConfiguration()
-print(conf)
 
 steps = len(conf["curve"])
 
@@ -144,7 +143,6 @@ else:
 
     while True:
         t = getTemperature()
-        print(t)
 
         if t > t0:
             s = conf["curve"][p0][1]
