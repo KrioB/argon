@@ -136,7 +136,7 @@ FanAddress = 0x1a
 
 StatusFile = "/tmp/argon-state"
 TemperatureFile = "/sys/class/thermal/thermal_zone0/temp"
-ConfigurationFile = "argond.conf"
+ConfigurationFile = "/etc/argond.conf"
 
 conf = loadConfiguration()
 
