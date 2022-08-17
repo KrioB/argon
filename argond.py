@@ -118,6 +118,14 @@ def setFanSpeed(speed):
     FanBus.write_byte(FanAddress,speed)
 
 
+def updateStatus(t, s):
+    try:
+        status = open(StatusFile, "w+")
+        status.write("fan={}\ntmp={}".format(s, t))
+        status.close()
+    except:
+        pass
+
 revision = RPi.GPIO.RPI_REVISION
 if revision == 2 or revision == 3:
 	FanBus = smbus.SMBus(1)
@@ -126,6 +134,7 @@ else:
 
 FanAddress = 0x1a
 
+StatusFile = "/tmp/argon-state"
 TemperatureFile = "/sys/class/thermal/thermal_zone0/temp"
 ConfigurationFile = "argond.conf"
 
@@ -167,5 +176,7 @@ else:
             setFanSpeed(s)
 
         t0 = t
+
+        updateStatus(t, s)
 
         time.sleep(conf["time"])

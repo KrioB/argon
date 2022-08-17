@@ -56,6 +56,12 @@ sudo cp argon-poweroff.py /usr/lib/systemd/system-shutdown/argon-poweroff.py
 sudo chown root:root /usr/lib/systemd/system-shutdown/argon-poweroff.py
 sudo chmod 755 /usr/lib/systemd/system-shutdown/argon-poweroff.py
 
+echo "Create argon status viewer"
+
+sudo cp argon-state.py /usr/bin/argon
+sudo chown root:root /usr/bin/argon
+sudo chmod 755 /usr/bin/argon
+
 echo "Create argon remove script"
 
 sudo cp argon-remove /usr/bin/argon-remove
