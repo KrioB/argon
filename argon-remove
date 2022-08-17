@@ -1,0 +1,12 @@
+#!/bin/bash
+
+sudo systemctl stop argond.service
+sudo systemctl disable argond.service
+
+python3 /usr/lib/systemd/system-shutdown/argon-poweroff.py "halt"
+
+sudo rm /usr/bin/argond.py
+sudo rm /usr/lib/systemd/system/argond.service
+sudo rm /etc/argond.conf
+sudo rm /usr/lib/systemd/system-shutdown/argon-poweroff.py
+sudo rm /usr/bin/argon-remove

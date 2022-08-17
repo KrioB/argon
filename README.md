@@ -10,4 +10,3 @@ curl http://download.argon40.com/argon1.sh | bash
 ## Install
 
 in the future
-

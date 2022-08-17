@@ -1,3 +1,60 @@
 #!/bin/bash
 
-echo "Hello"
+check_package() {
+
+    pkgstat=$(dpkg-query -W -f='${Status}\n' $1 2> /dev/null | grep "ok installed")
+
+	if [ "$pkgstat" == "" ]
+    then
+		echo 1
+	else
+		echo 0
+	fi
+}
+
+
+#packages=(raspi-gpio python3-rpi.gpio python3-smbus i2c-tools )
+packages=(python3 python3-rpi.gpio python3-smbus)
+
+
+for pkg in ${packages[@]}
+    do
+        if [ $(check_package $pkg) == 1 ]
+        then
+            sudo apt -y install $pkg
+        fi
+
+        if [ $(check_package $pkg) == 1 ]
+        then
+            echo "Er: Can not install $pkg"
+            exit 1
+        else
+            echo "Ok: $pkg installed"
+        fi
+    done
+
+
+sudo cp argond.py /usr/bin/argond.py
+sudo chown root:root /usr/bin/argond.py
+sudo chmod 755 /usr/bin/argond.py
+
+sudo cp argond.service /usr/lib/systemd/system/argond.service
+sudo chown root:root /usr/lib/systemd/system/argond.service
+sudo chmod 644 /usr/lib/systemd/system/argond.service
+
+sudo cp argond.conf /etc/argond.conf
+sudo chown root:root /etc/argond.conf
+sudo chmod 644 /etc/argond.conf
+
+sudo cp argon-poweroff.py /usr/lib/systemd/system-shutdown/argon-poweroff.py
+sudo chown root:root /usr/lib/systemd/system-shutdown/argon-poweroff.py
+sudo chmod 755 /usr/lib/systemd/system-shutdown/argon-poweroff.py
+
+sudo cp argon-remove /usr/bin/argon-remove
+sudo chown root:root /usr/bin/argon-remove
+sudo chmod 755 /usr/bin/argon-remove
+
+
+sudo systemctl daemon-reload
+sudo systemctl enable argond.service
+sudo systemctl start argond.service
