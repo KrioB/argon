@@ -68,6 +68,10 @@ sudo cp argon-remove /usr/bin/argon-remove
 sudo chown root:root /usr/bin/argon-remove
 sudo chmod 755 /usr/bin/argon-remove
 
+echo "Enable I2C bus"
+
+sudo raspi-config nonint do_i2c 0
+
 sudo systemctl daemon-reload
 
 echo "Enable argon daeomon"
