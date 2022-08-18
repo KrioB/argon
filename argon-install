@@ -72,9 +72,9 @@ echo "Enable I2C bus"
 
 sudo raspi-config nonint do_i2c 0
 
-sudo systemctl daemon-reload
-
 echo "Enable argon daeomon"
+
+sudo systemctl daemon-reload
 sudo systemctl enable argond.service
 sudo systemctl start argond.service
 
