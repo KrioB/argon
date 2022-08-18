@@ -1,5 +1,5 @@
 [Unit]
-Description=Argon One control service.
+Description=Argon One control service
 After=multi-user.target
 
 [Service]
