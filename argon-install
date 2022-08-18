@@ -42,9 +42,9 @@ sudo cp argond.py /usr/bin/argond.py
 sudo chown root:root /usr/bin/argond.py
 sudo chmod 755 /usr/bin/argond.py
 
-sudo cp argond.service /usr/lib/systemd/system/argond.service
-sudo chown root:root /usr/lib/systemd/system/argond.service
-sudo chmod 644 /usr/lib/systemd/system/argond.service
+sudo cp argond.service /etc/systemd/system/argond.service
+sudo chown root:root /etc/systemd/system/argond.service
+sudo chmod 644 /etc/systemd/system/argond.service
 
 sudo cp argond.conf /etc/argond.conf
 sudo chown root:root /etc/argond.conf
