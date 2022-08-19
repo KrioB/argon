@@ -212,7 +212,8 @@ log.info(conf)
 steps = len(conf["curve"])
 if steps == 1:
     # No curve, fan spins with constant speed
-    setFanSpeed(conf["curve"][0][1])
+    s = conf["curve"][0][1]
+    setFanSpeed(s)
 
     # Empty loop required
     # systemd tries to relaunch this script every time it crashes or finishes
