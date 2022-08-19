@@ -38,7 +38,7 @@ except Exception as err:
 
 # Turn off power supply
 if len(sys.argv) > 1 and sys.argv[1] == "poweroff":
-     try:
+    try:
         FanBus.write_byte(FanAddress, 0xFF)
         log.info("Power off")
     except Exception as err:
