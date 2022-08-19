@@ -23,10 +23,14 @@ if revision == 2 or revision == 3:
 else:
     busId = 0
 
-log.info("I2C bus {}".format(busId))
-
 # Global variables
-FanAddress = 0x1a
+try:
+    FanBus = smbus.SMBus(busId)
+    log.info("I2C bus {}".format(busId))
+except Exception as err:
+    log.critical("Can not set up I2C bus {}\n{}".format(busId, err))
+    sys.exit(1)
+
 FanBus = smbus.SMBus(busId)
 
 # Stop the fan

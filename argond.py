@@ -7,6 +7,7 @@
 
 import logging
 from systemd.journal import JournalHandler
+import sys
 import smbus
 import RPi.GPIO
 import time
@@ -29,6 +30,7 @@ def loadConfiguration():
         confFile = open(ConfigurationFile, "r")
     except:
         # Return default configuration
+        log.warning("Can not open {}".format(ConfigurationFile))
         configuration["curve"] = defCurve
         return configuration
 
@@ -46,6 +48,7 @@ def loadConfiguration():
         pair = tmpLine.split("=")
         if len(pair) != 2:
             # Skip wrong lines
+            log.warning("Can not read property from {}\n>{}<".format(ConfigurationFile, line))
             continue
 
         k = pair[0]
@@ -82,6 +85,7 @@ def loadConfiguration():
 
         else:
             # Key is wrong
+            log.warning("Can not read property from {}\n>{}<".format(ConfigurationFile, line))
             continue
 
     confFile.close()
@@ -128,6 +132,7 @@ def getTemperature():
         tFile = open(TemperatureFile, "r")
     except:
         # Return default temperature
+        log.warning("Can not open {}".format(TemperatureFile))
         return defTemperature
 
     try:
@@ -135,6 +140,8 @@ def getTemperature():
         # Convert mili Celsius to Celsius
         temperature = int(round(int(temperature)/1000))
     except:
+        # Return default temperature
+        log.warning("Can not read temperature from {}".format(TemperatureFile))
         temperature = defTemperature
 
     tFile.close()
@@ -146,28 +153,31 @@ def getTemperature():
 # Returns False or error message
 def setFanSpeed(speed):
 
-    errResponse = False
+    success = True
     try:
         FanBus.write_byte(FanAddress, speed)
+        log.info("Fan speed set to {}%".format(speed))
     except Exception as err:
-        errResponse = err
+        log.error("Can not set fan\n{}".format(err))
+        success = False
 
-    return errResponse
+    return success
 
 # Save status in TMP
 # Uses global StatusFile
 # Returns False or error message
 def updateStatus(t, s):
 
-    errResponse = False
+    success = True
     try:
         status = open(StatusFile, "w+")
         status.write("fan={}\ntmp={}".format(s, t))
         status.close()
     except Exception as err:
-        errResponse = err
+        log.error("Can not save status\n{}".format(err))
+        success = False
 
-    return errResponse
+    return success
 
 # Configure logger
 log = logging.getLogger(__name__)
@@ -181,11 +191,15 @@ if revision == 2 or revision == 3:
 else:
     busId = 0
 
-log.info("I2C bus {}".format(busId))
-
 # Global variables
+try:
+    FanBus = smbus.SMBus(busId)
+    log.info("I2C bus {}".format(busId))
+except Exception as err:
+    log.critical("Can not set up I2C bus {}\n{}".format(busId, err))
+    sys.exit(1)
+
 FanAddress = 0x1a
-FanBus = smbus.SMBus(busId)
 StatusFile = "/tmp/argon-state"
 TemperatureFile = "/sys/class/thermal/thermal_zone0/temp"
 ConfigurationFile = "/etc/argond.conf"
@@ -198,21 +212,14 @@ log.info(conf)
 steps = len(conf["curve"])
 if steps == 1:
     # No curve, fan spins with constant speed
-    s = conf["curve"][0][1]
-    errFan = setFanSpeed(s)
-    if errFan:
-        log.error("Can not set fan\n{}".format(errFan))
-    else:
-        log.info("Fan speed set to {}%".format(s))
+    setFanSpeed(conf["curve"][0][1])
 
     # Empty loop required
     # systemd tries to relaunch this script every time it crashes or finishes
     # this loop keeps process alive with minimum CPU work
     while True:
         t = getTemperature()
-        errStat = updateStatus(t, s)
-        if errStat:
-            log.error("Can not save status\n{}".format(errStat))
+        updateStatus(t, s)
 
         time.sleep(3600)
 
@@ -251,15 +258,9 @@ while True:
         p0 = p
 
         # Set fan
-        errFan = setFanSpeed(s)
-        if errFan:
-            log.error("Can not set fan\n{}".format(errFan))
-        else:
-            log.info("Fan speed set to {}%".format(s))
+        setFanSpeed(s)
 
     # Save status
-    errStat = updateStatus(t, s)
-    if errStat:
-        log.error("Can not save status\n{}".format(errStat))
+    updateStatus(t, s)
 
     time.sleep(conf["time"])
