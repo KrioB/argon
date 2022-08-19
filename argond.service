@@ -4,9 +4,9 @@ After=multi-user.target
 
 [Service]
 Type=simple
-Restart=always
-RemainAfterExit=true
 ExecStart=/usr/bin/python3 /usr/bin/argond.py
+ExecStopPost=/usr/bin/python3 /usr/lib/systemd/system-shutdown/argon-poweroff.py halt
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

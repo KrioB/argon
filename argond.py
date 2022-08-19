@@ -5,6 +5,8 @@
 # ver 1.0
 # -------------------------------------------
 
+import logging
+from systemd.journal import JournalHandler
 import smbus
 import RPi.GPIO
 import time
@@ -167,6 +169,11 @@ def updateStatus(t, s):
 
     return errResponse
 
+# Configure logger
+log = logging.getLogger(__name__)
+log.addHandler(JournalHandler())
+log.setLevel(logging.INFO)
+
 # Check board revision to use connected I2C bus
 revision = RPi.GPIO.RPI_REVISION
 if revision == 2 or revision == 3:
@@ -174,7 +181,7 @@ if revision == 2 or revision == 3:
 else:
     busId = 0
 
-print("I2C bus {}".format(busId))
+log.info("I2C bus {}".format(busId))
 
 # Global variables
 FanAddress = 0x1a
@@ -185,16 +192,18 @@ ConfigurationFile = "/etc/argond.conf"
 
 # Load configuration
 conf = loadConfiguration()
-steps = len(conf["curve"])
 
+log.info(conf)
+
+steps = len(conf["curve"])
 if steps == 1:
     # No curve, fan spins with constant speed
     s = conf["curve"][0][1]
     errFan = setFanSpeed(s)
     if errFan:
-        print("Can not set fan\n{}".format(errFan))
+        log.error("Can not set fan\n{}".format(errFan))
     else:
-        print("Fan speed set to {}%".format(s))
+        log.info("Fan speed set to {}%".format(s))
 
     # Empty loop required
     # systemd tries to relaunch this script every time it crashes or finishes
@@ -203,7 +212,7 @@ if steps == 1:
         t = getTemperature()
         errStat = updateStatus(t, s)
         if errStat:
-            print("Can not save status\n{}".format(errStat))
+            log.error("Can not save status\n{}".format(errStat))
 
         time.sleep(3600)
 
@@ -244,13 +253,13 @@ while True:
         # Set fan
         errFan = setFanSpeed(s)
         if errFan:
-            print("Can not set fan\n{}".format(errFan))
+            log.error("Can not set fan\n{}".format(errFan))
         else:
-            print("Fan speed set to {}%".format(s))
+            log.info("Fan speed set to {}%".format(s))
 
     # Save status
     errStat = updateStatus(t, s)
     if errStat:
-        print("Can not save status\n{}".format(errStat))
+        log.error("Can not save status\n{}".format(errStat))
 
     time.sleep(conf["time"])

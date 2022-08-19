@@ -16,7 +16,7 @@ check_package() {
 
 
 #packages=(raspi-gpio python3-rpi.gpio python3-smbus i2c-tools )
-packages=(python3 python3-rpi.gpio python3-smbus)
+packages=(python3 python3-rpi.gpio python3-smbus python3-systemd)
 
 
 for pkg in ${packages[@]}
