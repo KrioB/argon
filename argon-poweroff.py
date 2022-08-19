@@ -31,7 +31,7 @@ except Exception as err:
     log.critical("Can not set up I2C bus {}\n{}".format(busId, err))
     sys.exit(1)
 
-FanBus = smbus.SMBus(busId)
+FanAddress = 0x1a
 
 # Stop the fan
 try:
