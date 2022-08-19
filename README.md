@@ -9,4 +9,10 @@ curl http://download.argon40.com/argon1.sh | bash
 
 ## Install
 
-in the future
+```
+cd
+git clone https://github.com/KrioB/argon.git
+cd argon
+chmod +x argon-install
+./argon-install
+```
